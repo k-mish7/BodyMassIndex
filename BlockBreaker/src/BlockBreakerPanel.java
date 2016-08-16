@@ -11,30 +11,29 @@ public class BlockBreakerPanel extends JPanel implements KeyListener {
 	Animate animate;
 	Block paddle;
 	ArrayList<Block> blocks = new ArrayList<Block>();
+	ArrayList<Block> ball = new ArrayList<Block>();
 
 	public BlockBreakerPanel() {
 
 		paddle = new Block(175, 480, 150, 25, "paddle.png");
 
 		for (int i = 0; i < 8; i++) {
-
 			blocks.add(new Block((i * 60 + 2), 0, 60, 25, "blue.png"));
 		}
 
 		for (int i = 0; i < 8; i++) {
-
 			blocks.add(new Block((i * 60 + 2), 25, 60, 25, "green.png"));
 		}
 
 		for (int i = 0; i < 8; i++) {
-
 			blocks.add(new Block((i * 60 + 2), 50, 60, 25, "yellow.png"));
 		}
 
 		for (int i = 0; i < 8; i++) {
-
 			blocks.add(new Block((i * 60 + 2), 75, 60, 25, "red.png"));
 		}
+
+		ball.add(new Block(237, 437, 25, 25, "ball.png"));
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -46,7 +45,10 @@ public class BlockBreakerPanel extends JPanel implements KeyListener {
 		super.paintComponent(g);
 
 		for (Block b : blocks) {
+			b.draw(g, this);
+		}
 
+		for (Block b : ball) {
 			b.draw(g, this);
 		}
 
@@ -54,6 +56,29 @@ public class BlockBreakerPanel extends JPanel implements KeyListener {
 	}
 
 	public void update() {
+
+		for (Block ba : ball) {
+
+			ba.x = ba.x + ba.dx;
+
+			if (ba.x > (getWidth() - 25) && ba.dx > 0 || ba.x < 0) {
+				ba.dx = ba.dx * (-1);
+			}
+
+			if (ba.y < 0 || ba.intersects(paddle)) {
+				ba.dy = ba.dy * (-1);
+			}
+
+			ba.y = ba.y + ba.dy;
+
+			for (Block b : blocks) {
+
+				if (ba.intersects(b) && !b.destroyed) {
+					b.destroyed = true;
+					ba.dy = ba.dy * (-1);
+				}
+			}
+		}
 		repaint();
 	}
 
